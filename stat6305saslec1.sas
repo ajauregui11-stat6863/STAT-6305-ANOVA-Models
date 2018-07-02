@@ -1,11 +1,33 @@
-data name;
-input age time gender$;
-cards;
-27 1 F
-30 3 M
-run;
-proc print data=name;
-run;
+/*
+1.	After running the pilot study, the researchers conduct a 
+study involving 100 students. Twenty-five students were randomly 
+assigned to each of the four methods of instruction:
+no instruction (control), piano lessons, computer video games, 
+or instructor. The data are given in the attached excel sheet.
+
+a.	Conduct an analysis of variance and summarize your results 
+in an ANOVA table. 
+
+b. Test the research hypothesis that there is a difference in 
+mean effectiveness of the methods of instruction. Use a=0.05.
+
+c. Apply a multiple comparison procedure to determine pairwise 
+differences in the three methods. Use a=0.05.
+
+d. Was there significant evidence that all three methods of 
+instruction produced higher mean reasoning scores than the 
+mean reasoning score for the control?
+
+e. Error assumption
+
+•	Was there significant evidence of a violation of the 
+normality condition?
+
+•	Was there significant evidence that the variance in 
+reasoning scores was different for the three methods and the control?
+
+*/
+
 data one;
 input student control piano computer instructor;
 cards;
@@ -47,17 +69,37 @@ run;
 proc print data=two;
 run;
 proc glm data=two;
-class method; *for variable method X as a categorical variable (factor);
+class method; *for variable method X as a categorical variable 
+(factor);
 model Y=method;
-*means method / lsd;
-*means method/ hovtest=levene;
-*Performs the Levene test for the factor method;
-output out=resids r=res;
+*means method / lsd; *performs pairwise t-tests;
+*means method / dunnett ('Control'); *tests all means against control;
+*means method/ hovtest=levene; *tests homogeneity of variance for 
+the factor method;
+*output out=resids r=res; *for the test of normality;
 run;
 quit;
 proc univariate normal plot data=resids;
 /*Tells SAS to run tests of normality and give a QQ-plot */;
 var res;
+run;
+
+/*
+Answers: 
+b) The p-value of the model is <.0001. We reject the null hypothesis.
+
+c) Results from lsd show that none of the pairs are 
+significantly different.
+
+d) Results from Dunnett show that yes, the treatment means were 
+higher than the control.
+
+e) Results from Levene's test show variances are equal.
+
+f) Results from normality test show that assumption is met.
+*/
+
+
 
 data paint;
 input section p1 p2 p3 p4 Mean;
